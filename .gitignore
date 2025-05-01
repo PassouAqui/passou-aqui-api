@@ -39,8 +39,15 @@ media
 # File-based project format
 *.iws
 
+<<<<<<< HEAD
 # IntelliJ
 out/
+=======
+venv
+
+# vercel
+.vercel
+>>>>>>> ab0b966 (Remove unused files and configurations, including SVG assets, PostCSS configuration, global styles, and authentication components. Clean up the project structure by deleting unnecessary middleware, API services, and TypeScript configurations. This commit streamlines the codebase and prepares for a more focused development approach.)
 
 # JIRA plugin
 atlassian-ide-plugin.xml
