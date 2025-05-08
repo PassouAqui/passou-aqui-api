@@ -40,9 +40,13 @@ media
 *.iws
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # IntelliJ
 out/
 =======
+=======
+.venv
+>>>>>>> c5a73d0 (corrijindo migrations)
 venv
 
 # vercel
