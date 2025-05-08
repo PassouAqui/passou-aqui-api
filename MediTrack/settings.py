@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'MediTrack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='passouaqui'),
+        'NAME': config('POSTGRES_DB', default='rfid'),
         'USER': config('POSTGRES_USER', default='postgres'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='admin123'),
         'HOST': config('POSTGRES_HOST', default='localhost'),
