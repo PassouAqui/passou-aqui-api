@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-)7sm4c0v-1-9-t=_m+y8w
 
 DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,0.0.0.0,backend').split(',')
+ALLOWED_HOSTS = ['localhost', '10.0.2.2']
 
 
 # Application definition

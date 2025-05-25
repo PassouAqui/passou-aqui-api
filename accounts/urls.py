@@ -1,13 +1,18 @@
 from django.urls import path
-from .views import RegisterView, LoadUserView
-from .views.token_views import CookieTokenObtainPairView, CookieTokenRefreshView, LogoutView
-from .views.profile_view import ProfileView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+from .views import RegisterView, UserProfileView
+from .views.auth_views import LoginView, RefreshTokenView
 
 urlpatterns = [
-    path('register/', RegisterView.as_view()),
-    path('user/', LoadUserView.as_view()),
-    path('token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
-    path('logout/', LogoutView.as_view(), name='auth_logout'),
-    path('accounts/', ProfileView.as_view(), name='user-profile'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', TokenObtainPairView.as_view(), name='login'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('profile/', UserProfileView.as_view(), name='profile'),
+    path('auth/login/', LoginView.as_view(), name='login'),
+    path('auth/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
+    path('auth/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
