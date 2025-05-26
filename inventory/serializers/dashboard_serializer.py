@@ -2,18 +2,14 @@ from rest_framework import serializers
 from inventory.models.drug import Drug
 from inventory.models.inventory import Inventory
 from inventory.models.location import Location
-from django.db.models import Count, Q
-from django.utils import timezone
-from datetime import timedelta
 
 class DashboardSerializer(serializers.Serializer):
-    # Estatísticas gerais
     total_drugs = serializers.IntegerField()
-    active_drugs = serializers.IntegerField()
-    inactive_drugs = serializers.IntegerField()
+    total_locations = serializers.IntegerField()
+    total_inventory_items = serializers.IntegerField()
     
-    # Distribuição por tarja
-    tarja_distribution = serializers.DictField(
+    # Distribuição por localização
+    location_distribution = serializers.DictField(
         child=serializers.IntegerField()
     )
     
@@ -35,21 +31,24 @@ class DashboardSerializer(serializers.Serializer):
     @staticmethod
     def get_dashboard_data():
         """Método para obter todos os dados necessários para o dashboard"""
+        from django.db.models import Count, Q
+        from django.utils import timezone
+        from datetime import timedelta
+        
         # Data base para medicamentos próximos do vencimento
         thirty_days_from_now = timezone.now() + timedelta(days=30)
         
         # Obtém todos os dados necessários em uma única query
         dashboard_data = {
-            # Estatísticas gerais
             'total_drugs': Drug.objects.count(),
-            'active_drugs': Drug.objects.filter(ativo=True).count(),
-            'inactive_drugs': Drug.objects.filter(ativo=False).count(),
+            'total_locations': Location.objects.count(),
+            'total_inventory_items': Inventory.objects.count(),
             
-            # Distribuição por tarja
-            'tarja_distribution': dict(
-                Drug.objects.values('tarja')
+            # Distribuição por localização
+            'location_distribution': dict(
+                Inventory.objects.values('location__name')
                 .annotate(count=Count('id'))
-                .values_list('tarja', 'count')
+                .values_list('location__name', 'count')
             ),
             
             # Medicamentos próximos do vencimento
@@ -62,7 +61,7 @@ class DashboardSerializer(serializers.Serializer):
                     'id', 'drug__nome', 'drug__tarja',
                     'location__name', 'expiration_date',
                     'quantity'
-                ).order_by('expiration_date')  # Ordena por data de vencimento
+                )
             ),
             
             # Medicamentos com estoque baixo

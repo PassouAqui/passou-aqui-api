@@ -23,8 +23,9 @@ class DrugSerializer(serializers.ModelSerializer):
         logger = logging.getLogger(__name__)
         logger.info(f"Validando tarja: {value}")
         logger.info(f"TarjaChoices disponíveis: {dict(TarjaChoices)}")
+        logger.info(f"TarjaChoices valores: {[choice.value for choice in TarjaChoices]}")
         
-        if value not in dict(TarjaChoices):
+        if value not in [choice.value for choice in TarjaChoices]:
             logger.error(f"Tarja inválida: {value}")
             raise serializers.ValidationError("Tarja inválida")
         return value
