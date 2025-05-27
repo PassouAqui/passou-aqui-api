@@ -1,0 +1,6 @@
+Env exemple
+POSTGRES_DB='nome_db'
+POSTGRES_USER='user_db'
+POSTGRES_PASSWORD='senha_db'
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
