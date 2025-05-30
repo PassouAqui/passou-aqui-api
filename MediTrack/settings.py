@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'corsheaders',
     'rest_framework_simplejwt',
+    'softdelete',  # Added softdelete here
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

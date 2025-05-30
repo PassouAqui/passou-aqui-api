@@ -1,8 +1,8 @@
-from django_softdelete.models import SoftDeleteModel
+from softdelete.models import SoftDeleteObject
 from django.db import models
 import uuid
 
-class Location(SoftDeleteModel):
+class Location(SoftDeleteObject):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)

@@ -1,2 +1,3 @@
 from .location_serializer import LocationSerializer
 from .drug_serializer import DrugSerializer
+from .rfid_reader_serializer import RFIDReaderSerializer

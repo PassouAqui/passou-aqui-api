@@ -1,9 +1,9 @@
-from django_softdelete.models import SoftDeleteModel
+from softdelete.models import SoftDeleteObject
 from django.db import models
 import uuid
 from inventory.utils.Choices import TarjaChoices 
 
-class Drug(SoftDeleteModel):
+class Drug(SoftDeleteObject):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)
