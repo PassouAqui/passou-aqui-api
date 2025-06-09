@@ -1,3 +1,6 @@
+from firebase_admin import auth
+from firebase_admin import credentials
+
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -61,40 +64,42 @@ class VerifyTokenView(APIView):
 
     def post(self, request):
         token = request.data.get('token')
-        
         if not token:
             return Response(
-                {'error': 'Token não fornecido'}, 
+                {'error': 'Token não fornecido'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Verifica o token no Firebase
-        firebase_user = firebase_service.verify_token(token)
-        
-        if not firebase_user:
+
+        firebase_user = None 
+        try:
+            firebase_user = auth.verify_id_token(token)
+        except Exception as e:
             return Response(
-                {'error': 'Token inválido'}, 
+                {'error': f'Token inválido ou expirado: {str(e)}'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
         try:
             with transaction.atomic():
-                # Busca ou cria o usuário no banco de dados
                 user, created = User.objects.get_or_create(
                     firebase_uid=firebase_user['uid'],
                     defaults={
+                        'username': firebase_user['email'],
                         'email': firebase_user['email'],
                         'name': firebase_user.get('display_name', ''),
                         'is_verified': firebase_user['email_verified'],
-                        'role': 'user' if created else user.role  # Mantém o role existente se o usuário já existe
+                        'role': 'user',
                     }
                 )
 
-                # Atualiza informações do usuário se necessário
                 if not created:
                     user.email = firebase_user['email']
                     user.name = firebase_user.get('display_name', user.name)
                     user.is_verified = firebase_user['email_verified']
+                    # Você pode adicionar lógica aqui se quiser que o Firebase possa ATUALIZAR o role:
+                    # if 'role' in firebase_user and firebase_user['role'] != user.role:
+                    #     user.role = firebase_user['role']
                     user.save()
 
                 return Response({
@@ -106,6 +111,6 @@ class VerifyTokenView(APIView):
 
         except Exception as e:
             return Response(
-                {'error': f'Erro ao processar usuário: {str(e)}'}, 
+                {'error': f'Erro ao processar usuário no DB: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            ) 
+            )

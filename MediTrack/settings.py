@@ -123,7 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
+AUTH_USER_MODEL = 'accounts.User' 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -145,9 +145,9 @@ if os.getenv('FIREBASE_CREDENTIALS'):
     except json.JSONDecodeError:
         raise ValueError("FIREBASE_CREDENTIALS não é um JSON válido")
         
-elif os.path.exists(os.path.join(BASE_DIR, 'credentials', 'passou-aqui-firebase-adminsdk-fbsvc-425aa17a0a.json')):
+elif os.path.exists(os.path.join(BASE_DIR, 'credentials', 'autentication.json')):
     # Para desenvolvimento local
-    FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, 'credentials', 'passou-aqui-firebase-adminsdk-fbsvc-425aa17a0a.json')
+    FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, 'credentials', 'autentication.json')
     
 else:
     raise FileNotFoundError("Credenciais do Firebase não configuradas. Configure FIREBASE_CREDENTIALS como variável de ambiente ou coloque o arquivo passou-aqui-firebase-adminsdk-fbsvc-425aa17a0a.json na pasta credentials/")
