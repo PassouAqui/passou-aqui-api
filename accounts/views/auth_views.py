@@ -11,7 +11,9 @@ from rest_framework.views import APIView
 from ..services.firebase_service import firebase_service
 from ..models import User
 from django.db import transaction
+import logging
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 class LoginView(generics.GenericAPIView):
@@ -63,24 +65,32 @@ class VerifyTokenView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        logger.info("🔍 VerifyTokenView: Iniciando verificação de token")
+        
         token = request.data.get('token')
         if not token:
+            logger.error("🔍 VerifyTokenView: Token não fornecido")
             return Response(
                 {'error': 'Token não fornecido'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        logger.info(f"🔍 VerifyTokenView: Token recebido (primeiros 20 chars): {token[:20]}...")
 
         firebase_user = None 
         try:
+            logger.info("🔍 VerifyTokenView: Tentando verificar token no Firebase...")
             firebase_user = auth.verify_id_token(token)
+            logger.info(f"🔍 VerifyTokenView: Token verificado com sucesso. UID: {firebase_user.get('uid')}")
         except Exception as e:
+            logger.error(f"🔍 VerifyTokenView: Erro ao verificar token no Firebase: {str(e)}")
             return Response(
                 {'error': f'Token inválido ou expirado: {str(e)}'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
         try:
+            logger.info("🔍 VerifyTokenView: Iniciando transação no banco de dados...")
             with transaction.atomic():
                 user, created = User.objects.get_or_create(
                     firebase_uid=firebase_user['uid'],
@@ -94,22 +104,27 @@ class VerifyTokenView(APIView):
                 )
 
                 if not created:
+                    logger.info(f"🔍 VerifyTokenView: Usuário existente encontrado: {user.email}")
                     user.email = firebase_user['email']
                     user.name = firebase_user.get('display_name', user.name)
                     user.is_verified = firebase_user['email_verified']
-                    # Você pode adicionar lógica aqui se quiser que o Firebase possa ATUALIZAR o role:
-                    # if 'role' in firebase_user and firebase_user['role'] != user.role:
-                    #     user.role = firebase_user['role']
                     user.save()
+                else:
+                    logger.info(f"🔍 VerifyTokenView: Novo usuário criado: {user.email}")
 
-                return Response({
+                response_data = {
                     'success': True,
                     'user_id': user.id,
                     'role': user.role,
-                    'is_verified': user.is_verified
-                })
+                    'is_verified': user.is_verified,
+                    'firebase_uid': firebase_user['uid']
+                }
+                
+                logger.info(f"🔍 VerifyTokenView: Resposta de sucesso: {response_data}")
+                return Response(response_data)
 
         except Exception as e:
+            logger.error(f"🔍 VerifyTokenView: Erro ao processar usuário no DB: {str(e)}")
             return Response(
                 {'error': f'Erro ao processar usuário no DB: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
