@@ -13,9 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config # type: ignore
 import dj_database_url # Importe dj_database_url
-import os
-import os
-import json
+from datetime import timedelta
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -138,16 +137,10 @@ REST_FRAMEWORK = {
     # ),
 }
 
-if os.getenv('FIREBASE_CREDENTIALS'):
-    # Para Docker/produção - usando variável de ambiente
-    try:
-        FIREBASE_CREDENTIALS = json.loads(os.getenv('FIREBASE_CREDENTIALS'))
-    except json.JSONDecodeError:
-        raise ValueError("FIREBASE_CREDENTIALS não é um JSON válido")
-        
-elif os.path.exists(os.path.join(BASE_DIR, 'credentials', 'autentication.json')):
-    # Para desenvolvimento local
-    FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, 'credentials', 'autentication.json')
-    
-else:
-    raise FileNotFoundError("Credenciais do Firebase não configuradas. Configure FIREBASE_CREDENTIALS como variável de ambiente ou coloque o arquivo passou-aqui-firebase-adminsdk-fbsvc-425aa17a0a.json na pasta credentials/")
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AcessToken',),
+}

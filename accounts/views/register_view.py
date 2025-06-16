@@ -1,29 +1,61 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from accounts.serializers import RegisterSerializer, UserSerializer
-
+from django.contrib.auth.models import User
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            data = request.data
+            first_name = data['first_name']
+            last_name = data['last_name']
+            username = data['username']
+            password = data['password']
+            re_password = data['re_password']
 
-        user = serializer.save()
+            if password == re_password:
+                if len(password) >= 8:
+                    if not User.objects.filter(username=username).exists:
+                        user = User.create_user(
+                            first_name = first_name,
+                            last_name = last_name,
+                            username = username,
+                            password = password,
+                            re_password = re_password,
+                        )
 
-        # gera os tokens
-        refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+                        user.save()
+                        return Response({
+                            'sucess': 'Conta criada com sucesso!'
+                        },
+                        status=status.HTTP_201_CREATED 
+                        ),
 
-        # serializa o usuário (sem expor senha)
-        user_data = UserSerializer(user).data
+                    else:
+                        return Response({
+                            'error': 'Username ja utilizado'
+                        },
+                        status=status.HTTP_400_BAD_REQUEST 
+                        )
 
-        return Response({
-            'user':    user_data,
-            'refresh': str(refresh),
-            'access':  str(access),
-        }, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({
+                        'error': 'A senha é menor do que 8 caractéres'
+                    },
+                    status=status.HTTP_400_BAD_REQUEST 
+                    )
+            else: 
+                return Response({
+                    'error': 'As senhas não são iguais'
+                },
+                    status=status.HTTP_400_BAD_REQUEST 
+                )
+        
+        except:
+            return Response(
+                {
+                    "error:" : "erro ao criar conta"
+                },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
