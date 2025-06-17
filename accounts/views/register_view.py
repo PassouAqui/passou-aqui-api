@@ -1,61 +1,52 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import permissions, status
 from django.contrib.auth.models import User
+from django.db import transaction
+import logging
+
+from accounts.serializers import UserRegistrationSerializer
+
+logger = logging.getLogger(__name__)
+
 class RegisterView(APIView):
-    permission_classes = [permissions.AllowAny]
-
+    
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserRegistrationSerializer
+    
     def post(self, request):
-        try:
-            data = request.data
-            first_name = data['first_name']
-            last_name = data['last_name']
-            username = data['username']
-            password = data['password']
-            re_password = data['re_password']
-
-            if password == re_password:
-                if len(password) >= 8:
-                    if not User.objects.filter(username=username).exists:
-                        user = User.create_user(
-                            first_name = first_name,
-                            last_name = last_name,
-                            username = username,
-                            password = password,
-                            re_password = re_password,
-                        )
-
-                        user.save()
-                        return Response({
-                            'sucess': 'Conta criada com sucesso!'
-                        },
-                        status=status.HTTP_201_CREATED 
-                        ),
-
-                    else:
-                        return Response({
-                            'error': 'Username ja utilizado'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST 
-                        )
-
-                else:
-                    return Response({
-                        'error': 'A senha é menor do que 8 caractéres'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST 
-                    )
-            else: 
-                return Response({
-                    'error': 'As senhas não são iguais'
-                },
-                    status=status.HTTP_400_BAD_REQUEST 
-                )
+        serializer = self.serializer_class(data=request.data)
         
-        except:
+        if not serializer.is_valid():
             return Response(
                 {
-                    "error:" : "erro ao criar conta"
+                    'error': 'Dados inválidos',
+                    'details': serializer.errors
                 },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            with transaction.atomic():
+                user = serializer.save()
+                logger.info(f"Usuário {user.username} criado com sucesso")
+                
+                return Response(
+                    {
+                        'success': 'Usuário criado com sucesso!',
+                        'user': {
+                            'id': user.id,
+                            'username': user.username,
+                            'first_name': user.first_name,
+                            'last_name': user.last_name
+                        }
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+                
+        except Exception as e:
+            logger.error(f"Erro ao criar usuário: {str(e)}")
+            return Response(
+                {'error': 'Erro interno do servidor. Tente novamente mais tarde.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
