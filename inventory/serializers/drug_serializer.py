@@ -2,11 +2,17 @@ from rest_framework import serializers
 from inventory.models import Drug
 from inventory.utils.Choices import TarjaChoices
 import logging
+from inventory.serializers import RecordsSerializer
 
 class DrugSerializer(serializers.ModelSerializer):
+
+    records = RecordsSerializer(
+        many=True,
+        read_only=True
+    )
     class Meta:
         model = Drug
-        fields = ['id', 'nome', 'descricao', 'tag_uid', 'lote', 'validade', 'ativo', 'tarja']
+        fields = ['id', 'nome', 'descricao', 'tag_uid', 'lote', 'validade', 'ativo', 'tarja', 'records']
         read_only_fields = ['id']
 
     def validate_validade(self, value):

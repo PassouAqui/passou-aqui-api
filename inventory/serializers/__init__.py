@@ -1,3 +1,3 @@
 from .location_serializer import LocationSerializer
+from .records_serializer import RecordsSerializer, RecordsCreateSerializer
 from .drug_serializer import DrugSerializer
-from .records_serializer import RecordsSerializer

@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from inventory.models import Drug, Records
-from inventory.serializers import RecordsSerializer
+from inventory.serializers import RecordsSerializer, RecordsCreateSerializer
 from django.shortcuts import get_object_or_404
 
 import logging
@@ -14,32 +14,28 @@ class RecordsViewSet(viewsets.GenericViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordsSerializer
     
+    def get_serializer_class(self):
+        if self.action == 'register':
+            return RecordsCreateSerializer
+        return RecordsSerializer
+    
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def register(self, request):
         logger.info(f"📡 Leitura RFID recebida: {request.data}")
         
-        serializer = RecordsSerializer(data=request.data)
-
+        serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid():
-            tag_uid = serializer.validated_data['tag_uid']
-            arduino = serializer.validated_data.get('arduino', '')
-            
             try:
-                drug = get_object_or_404(Drug, tag_uid=tag_uid, ativo=True)
+                reading = serializer.save()
                 
-                # Criar a leitura
-                reading = Records.objects.create(
-                    drug=drug,
-                    arduino=arduino
-                )
-                
-                logger.info(f"✅ Leitura registrada: {drug.nome} - {arduino}")
+                logger.info(f"✅ Leitura registrada: {reading.drug.nome} - {reading.arduino}")
                 
                 return Response({
                     'success': True,
-                    'drug_name': drug.nome,
-                    'create_at': reading.create_at
+                    'drug_name': reading.drug.nome,
+                    'create_at': reading.create_at,
+                    'id': reading.id
                 }, status=status.HTTP_201_CREATED)
                 
             except Exception as e:
