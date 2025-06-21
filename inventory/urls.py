@@ -8,7 +8,6 @@ from inventory.views.records_view import RecordsViewSet
 
 router = DefaultRouter()
 router.register(r'drugs', DrugViewSet, basename='drug')
-router.register(r'drugs', DrugViewSet, basename='drug')
 router.register(r'locations', LocationViewSet)
 router.register(r'carts', CartViewSet)
 router.register(r'records', RecordsViewSet)
