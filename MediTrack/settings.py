@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'accounts',
     'corsheaders',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',  # Necessário para OutstandingToken
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters'
 ]
 
 CORS_ALLOWED_ORIGINS = [

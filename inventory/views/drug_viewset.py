@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import filters
 from inventory.models import Drug
 from inventory.serializers.drug_serializer import DrugSerializer
 from django.shortcuts import get_object_or_404
@@ -18,6 +19,9 @@ class DrugViewSet(viewsets.ModelViewSet):
     serializer_class = DrugSerializer
     # permission_classes = [IsAuthenticated]
     queryset = Drug.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields  = ['nome', 'tag_uid', 'lote']
+
 
     def get_queryset(self):
         """
