@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Passou Aqui - Frontend
 
-## Getting Started
+Projeto frontend utilizando [Next.js 15+](https://nextjs.org/), [Mantine](https://mantine.dev/), [Tailwind CSS](https://tailwindcss.com/), [TypeScript](https://www.typescriptlang.org/) e [pnpm](https://pnpm.io/), com ambiente completo para desenvolvimento e produção via Docker.
 
-First, run the development server:
+---
 
+## 📦 Tecnologias
+
+- [Next.js 15 (App Router)](https://nextjs.org/docs)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Mantine UI](https://mantine.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [pnpm](https://pnpm.io/)
+- [ESLint + Prettier + Husky + Lint-Staged](https://eslint.org/)
+- [Docker](https://www.docker.com/)
+
+---
+
+## 🚀 Como rodar o projeto
+
+### ✅ Usando Docker (recomendado)
+
+> Não precisa instalar Node, pnpm nem dependências locais.
+
+#### 1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/seu-usuario/passou-aqui-client.git
+cd passou-aqui-client
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### 2. Rode com Docker Compose (modo desenvolvimento):
+```bash
+docker-compose -f config/docker/docker-compose.dev.yml up --build
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### 3. Acesse:
+[http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧪 Scripts de desenvolvimento
 
-To learn more about Next.js, take a look at the following resources:
+### Se quiser usar pnpm localmente:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm install          # instala dependências
+pnpm dev              # roda o projeto local (sem docker)
+pnpm lint             # lint + prettier
+pnpm format           # aplica prettier
+pnpm dev:docker       # roda com docker-compose.dev.yml
+pnpm prod:docker      # roda com docker-compose.yml (build de produção)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📁 Estrutura de pastas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+/passou-aqui-client
+├── config
+│   ├── docker
+│   │   ├── Dockerfile
+│   │   ├── Dockerfile.dev
+│   │   ├── docker-compose.yml
+│   │   └── docker-compose.dev.yml
+│   └── eslint.config.mjs
+├── public
+├── src
+├── .env.local
+├── .gitignore
+├── .prettierrc
+├── .dockerignore
+├── postcss.config.mjs
+├── tailwind.config.ts
+├── next.config.ts
+├── tsconfig.json
+├── package.json
+└── README.md
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🌐 Variáveis de ambiente
+
+- Ambiente de desenvolvimento: `.env.local`
+- Ambiente de produção: `.env.production`
+
+Exemplo:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+
+---
+
+## 🐳 Observações Docker
+
+- A imagem base usa `node:22-alpine`
+- Hot reload funcionando com volume bind do host
+- Porta padrão exposta: `3000`
+
+---
+
+
