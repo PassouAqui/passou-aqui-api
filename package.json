@@ -10,7 +10,8 @@
     "prepare": "husky install",
     "format": "prettier --write",
     "dev:docker": "docker-compose -f config/docker/docker-compose.dev.yml up --build",
-    "prod:docker": "docker-compose -f config/docker/docker-compose.yml up --build"
+    "prod:docker": "docker-compose -f config/docker/docker-compose.yml up --build",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
