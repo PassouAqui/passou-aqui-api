@@ -63,7 +63,6 @@ pnpm prod:docker      # roda com docker-compose.yml (build de produção)
 │   │   ├── Dockerfile.dev
 │   │   ├── docker-compose.yml
 │   │   └── docker-compose.dev.yml
-│   └── eslint.config.mjs
 ├── public
 ├── src
 ├── .env.local
@@ -75,7 +74,8 @@ pnpm prod:docker      # roda com docker-compose.yml (build de produção)
 ├── next.config.ts
 ├── tsconfig.json
 ├── package.json
-└── README.md
+├── README.md
+├── eslint.config.mjs
 ```
 
 ---
