@@ -1,21 +1,13 @@
-# Dockerfile.dev
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Habilita o Corepack e ativa o PNPM
-RUN corepack enable && corepack prepare pnpm@10.9.0 --activate
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copia os arquivos de dependência primeiro
 COPY package.json pnpm-lock.yaml ./
-
 RUN pnpm install
 
-# Copia o restante do projeto
 COPY . .
 
-# Expõe a porta do Next.js
 EXPOSE 3000
-
-# Comando de desenvolvimento
 CMD ["pnpm", "dev"]
