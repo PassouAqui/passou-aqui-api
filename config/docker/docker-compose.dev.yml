@@ -1,13 +1,14 @@
 services:
   web:
     build:
-      context: .
+      context: ../..
       dockerfile: config/docker/Dockerfile.dev
     volumes:
-      - .:/app
+      - ../..:/app
       - /app/node_modules
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-    command: pnpm dev
+      - CHOKIDAR_USEPOLLING=true
+    command: pnpm exec next dev
