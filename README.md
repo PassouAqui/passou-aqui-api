@@ -23,17 +23,20 @@ Projeto frontend utilizando [Next.js 15+](https://nextjs.org/), [Mantine](https:
 > Não precisa instalar Node, pnpm nem dependências locais.
 
 #### 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/seu-usuario/passou-aqui-client.git
 cd passou-aqui-client
 ```
 
 #### 2. Rode com Docker Compose (modo desenvolvimento):
+
 ```bash
 docker-compose -f config/docker/docker-compose.dev.yml up --build
 ```
 
 #### 3. Acesse:
+
 [http://localhost:3000](http://localhost:3000)
 
 ---
@@ -86,6 +89,7 @@ pnpm prod:docker      # roda com docker-compose.yml (build de produção)
 - Ambiente de produção: `.env.production`
 
 Exemplo:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
@@ -99,5 +103,3 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 - Porta padrão exposta: `3000`
 
 ---
-
-
