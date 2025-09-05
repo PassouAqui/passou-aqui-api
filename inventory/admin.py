@@ -1,3 +1,7 @@
 from django.contrib import admin
+from inventory.models import (Drug, Location)
 
-# Register your models here.
+class DrugAdmin(admin.ModelAdmin):
+    list_display = ('nome', )
+
+admin.site.register(Drug, DrugAdmin)
