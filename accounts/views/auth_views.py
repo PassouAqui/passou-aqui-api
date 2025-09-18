@@ -4,6 +4,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from ..serializers.auth_serializer import LoginSerializer, UserSerializer
+from rest_framework.views import APIView
+from ..services.firebase_service import firebase_service
+from ..models import User
+from django.db import transaction
 
 User = get_user_model()
 
@@ -50,4 +54,58 @@ class RefreshTokenView(generics.GenericAPIView):
             return Response(
                 {'error': 'Invalid refresh token'},
                 status=status.HTTP_401_UNAUTHORIZED
+            )
+
+class VerifyTokenView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token')
+        
+        if not token:
+            return Response(
+                {'error': 'Token não fornecido'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Verifica o token no Firebase
+        firebase_user = firebase_service.verify_token(token)
+        
+        if not firebase_user:
+            return Response(
+                {'error': 'Token inválido'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        try:
+            with transaction.atomic():
+                # Busca ou cria o usuário no banco de dados
+                user, created = User.objects.get_or_create(
+                    firebase_uid=firebase_user['uid'],
+                    defaults={
+                        'email': firebase_user['email'],
+                        'name': firebase_user.get('display_name', ''),
+                        'is_verified': firebase_user['email_verified'],
+                        'role': 'user' if created else user.role  # Mantém o role existente se o usuário já existe
+                    }
+                )
+
+                # Atualiza informações do usuário se necessário
+                if not created:
+                    user.email = firebase_user['email']
+                    user.name = firebase_user.get('display_name', user.name)
+                    user.is_verified = firebase_user['email_verified']
+                    user.save()
+
+                return Response({
+                    'success': True,
+                    'user_id': user.id,
+                    'role': user.role,
+                    'is_verified': user.is_verified
+                })
+
+        except Exception as e:
+            return Response(
+                {'error': f'Erro ao processar usuário: {str(e)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             ) 

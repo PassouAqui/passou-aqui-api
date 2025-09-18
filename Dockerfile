@@ -2,7 +2,7 @@ FROM python:3.11-slim-buster
 
 WORKDIR /app
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
     postgresql-client \
