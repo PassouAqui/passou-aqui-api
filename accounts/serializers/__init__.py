@@ -1,3 +1,3 @@
 from .register_serializer import RegisterSerializer
-from .user_serializer import UserSerializer
+from .user_serializer import UserRegistrationSerializer
 from .load_user_serializer import UserSerializer
