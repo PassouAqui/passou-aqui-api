@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.auth.models import User
 from accounts.serializers import UserSerializer
+from accounts.authentication import CustomJWTAuthentication
 
 class LoadUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [CustomJWTAuthentication]
     
     def get(self, request, format=None):
         try:
@@ -21,8 +23,8 @@ class LoadUserView(APIView):
             return Response(
                 {
                     'username': user_serializer.data['username'],
-                    'first_name' : user_serializer.data['first_name'],
-                    'last_name' : user_serializer.data['last_name']
+                    'first_name': user_serializer.data['first_name'],
+                    'last_name': user_serializer.data['last_name']
                 },
                 status=status.HTTP_200_OK
             )
