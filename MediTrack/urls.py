@@ -12,6 +12,6 @@ urlpatterns = [
     path('api/v1/auth/login/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/auth/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('api/v1/auth/logout/', LogoutView.as_view(), name='auth_logout'),
-    path('api/v1/auth/profile/', ProfileView.as_view(), name='auth-profile'),
+    path('api/v1/auth/accounts/', ProfileView.as_view(), name='auth-profile'),
     
 ]
